@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SmartBot ✨ — By Shibnath Sahoo</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg1: #eaf3ff;
+    --card: #ffffff;
+    --accent1: #0078ff;
+    --accent2: #00c6ff;
+    --accent3: #0066ff;
+    --text: #0a1b33;
+    --muted: rgba(10,27,51,0.6);
+  }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(160deg, #eaf3ff 0%, #d2e7ff 100%);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+
+  /* floating animated blobs */
+  .blob {
+    position: absolute;
+    filter: blur(70px);
+    opacity: .25;
+    pointer-events:none;
+    animation: float 10s ease-in-out infinite alternate;
+  }
+  .blob.one{ width:500px; height:500px; background:linear-gradient(135deg,#0078ff,#00c6ff); left:-120px; top:-100px; }
+  .blob.two{ width:400px; height:400px; background:linear-gradient(135deg,#00c6ff,#0066ff); right:-100px; bottom:-100px; }
+  @keyframes float { from{transform:translateY(0);} to{transform:translateY(20px);} }
+
+  /* main chat card */
+  .chat-app{
+    width:420px;
+    max-width:94vw;
+    height:640px;
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    z-index:2;
+  }
+
+  /* header */
+  .chat-header{
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background: linear-gradient(90deg,#0078ff,#00c6ff);
+    color:white;
+  }
+  .logo {
+    width:46px; height:46px; border-radius:10px;
+    background:white;
+    color:#0078ff;
+    font-weight:700;
+    font-size:18px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+  }
+  .title {
+    flex:1;
+  }
+  .title h3{ margin:0; font-size:17px; letter-spacing:0.2px; }
+  .title p{ margin:0; font-size:12px; opacity:0.9; }
+
+  /* header actions */
+  .actions{ display:flex; gap:8px; align-items:center; }
+  .icon-btn{
+    width:36px; height:36px; border-radius:9px;
+    display:grid; place-items:center;
+    background: rgba(255,255,255,0.25);
+    cursor:pointer;
+    transition: transform .18s ease, background .18s;
+  }
+  .icon-btn:hover{ transform:translateY(-3px); background:rgba(255,255,255,0.35); }
+
+  /* chat area */
+  .chat-area{
+    flex:1;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow:auto;
+    scroll-behavior:smooth;
+    background: #f7faff;
+  }
+
+  /* message styles */
+  .msg-row{ display:flex; gap:10px; align-items:flex-end; max-width:100%; animation: fadeIn .35s ease; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+  .msg-row.user{ justify-content:flex-end; }
+
+  .avatar{
+    width:38px; height:38px; border-radius:10px;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(135deg,#0078ff,#00c6ff);
+    color:#fff; font-weight:600; font-size:14px;
+  }
+
+  .bubble{
+    max-width:76%;
+    padding:12px 14px;
+    border-radius:14px;
+    line-height:1.4;
+    font-size:14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    animation: slideIn .3s ease;
+  }
+  @keyframes slideIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+
+  .bubble.bot{
+    background: #e8f3ff;
+    color: var(--text);
+    border-bottom-left-radius:4px;
+  }
+
+  .bubble.user{
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    color:white;
+    border-bottom-right-radius:4px;
+  }
+
+  .meta{ font-size:11px; color:var(--muted); margin-top:6px; display:block; }
+
+  /* typing indicator */
+  .typing { display:inline-flex; align-items:center; gap:6px; }
+  .dot {
+    width:8px; height:8px; border-radius:50%;
+    background:#0078ff;
+    animation: blink 1s infinite;
+  }
+  .dot:nth-child(2){ animation-delay:.18s }
+  .dot:nth-child(3){ animation-delay:.36s }
+  @keyframes blink {
+    0%{ transform:translateY(0); opacity:.3 }
+    50%{ transform:translateY(-4px); opacity:1 }
+    100%{ transform:translateY(0); opacity:.3 }
+  }
+
+  /* input area */
+  .input-area{
+    display:flex;
+    gap:10px;
+    padding:12px;
+    border-top: 1px solid #e2e8f0;
+    background: #fff;
+  }
+  .input { flex:1; }
+  .input input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid #d0d7e2;
+    outline:none;
+    font-size:14px;
+    background: #f8fbff;
+    color:var(--text);
+  }
+  .send-btn{
+    width:60px;
+    border-radius:12px;
+    border:none;
+    cursor:pointer;
+    background: linear-gradient(135deg,#0078ff,#00c6ff);
+    color:white;
+    font-weight:600;
+    font-size:14px;
+    transition: transform .12s ease;
+  }
+  .send-btn:active{ transform:scale(.97); }
+
+  .hint{ font-size:12px; color:var(--muted); padding:8px 18px; text-align:center; }
+
+</style>
+</head>
+
+<body>
+  <div class="blob one"></div>
+  <div class="blob two"></div>
+
+  <div class="chat-app">
+    <div class="chat-header">
+      <div class="logo">SB</div>
+      <div class="title">
+        <h3>SmartBot</h3>
+        <p>By Shibnath Sahoo</p>
+      </div>
+      <div class="actions">
+        <div class="icon-btn" title="Clear" id="clearBtn">🗑️</div>
+      </div>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+      <div class="msg-row">
+        <div class="avatar">🤖</div>
+        <div>
+          <div class="bubble bot">
+            Hello! I'm SmartBot 💬<br>
+            <small class="meta">Try: "time", "date", "day", "joke", "who are you?", "python", "fever", etc.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input">
+        <input id="userInput" autocomplete="off" placeholder="Type a message..." />
+      </div>
+      <button class="send-btn" id="sendBtn">Send</button>
+    </div>
+
+    <div class="hint">Press <strong>Enter</strong> to send your message</div>
+  </div>
+
+<script>
+  const chatArea = document.getElementById('chatArea');
+  const userInput = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  function appendMessage({who='bot', text='', time=null, typing=false}) {
+    const row = document.createElement('div');
+    row.className = 'msg-row ' + (who === 'user' ? 'user' : '');
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.innerHTML = who === 'user' ? '👤' : '🤖';
+
+    const wrapper = document.createElement('div');
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble ' + (who === 'user' ? 'user' : 'bot');
+
+    if (typing) {
+      bubble.innerHTML = `<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+    } else {
+      bubble.innerHTML = text;
+      if (time) bubble.innerHTML += `<br><span class="meta">${time}</span>`;
+    }
+
+    wrapper.appendChild(bubble);
+    if (who === 'user') { row.appendChild(wrapper); row.appendChild(avatar); }
+    else { row.appendChild(avatar); row.appendChild(wrapper); }
+
+    chatArea.appendChild(row);
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }
+
+  function nowTime(){
+    const d = new Date();
+    return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  }
+
+  function botResponse(msg){
+    msg = msg.toLowerCase();
+    const jokes = [
+      "Why did the computer catch a cold? It left its Windows open 😂",
+      "I'm not lazy, I'm just on energy-saving mode ⚡",
+      "Why do Java developers wear glasses? Because they can’t C#! 😎"
+    ];
+    const gk = {
+      'india capital': 'The capital of India is New Delhi 🇮🇳',
+      'moon': 'The Moon is Earth’s only natural satellite 🌕',
+      'sun': 'The Sun is a massive ball of hot gases ☀️',
+      'earth': 'Earth is the third planet from the Sun 🌍'
+    };
+    const dictionary = {
+      'ai': 'AI means Artificial Intelligence — machines that think & learn like humans 💡',
+      'algorithm': 'An algorithm is a step-by-step method to solve a problem 🔢',
+      'data': 'Data means information or facts stored for analysis 📊',
+      'python': 'Python is a popular, beginner-friendly programming language 🐍'
+    };
+    const medical = {
+      'fever': 'For mild fever 🤒 — take rest, fluids, and paracetamol if needed. See doctor if persists 🏥',
+      'headache': 'For headache 😣 — rest, drink water, and you can take paracetamol 💊',
+      'cold': 'For common cold 🤧 — steam inhalation, vitamin C, and rest help 🌿'
+    };
+    const edu = {
+      'machine learning': 'Machine Learning teaches computers to learn patterns from data 📈',
+      'cloud computing': 'Cloud Computing provides computing power via the internet ☁️',
+      'os': 'An Operating System manages computer resources 💻',
+      'database': 'A database stores and organizes data efficiently 🗂️'
+    };
+    const predictions = [
+      "I predict success is on your path 🌟",
+      "A big smile is coming soon 😊",
+      "Your efforts will be rewarded 💪",
+      "Today is a lucky day 🍀"
+    ];
+
+    const d = new Date();
+    const date = d.toLocaleDateString();
+    const day = d.toLocaleDateString(undefined, { weekday: 'long' });
+    const year = d.getFullYear();
+
+    if(msg.includes('hello') || msg.includes('hi')) return "Hey there! 👋 How are you today?";
+    if(msg.includes('who are you')) return "I'm SmartBot, your friendly AI assistant 🤖";
+    if(msg.includes('creator')) return "I was created by Shibnath Sahoo 👨‍💻";
+    if(msg.includes('time')) return "Current time is ⏰ " + nowTime();
+    if (msg.includes('date')) return "📅 Today's date is " + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    if(msg.includes('year')) return "This year is " + year + " 🎉";
+    if(msg.includes('joke')) return jokes[Math.floor(Math.random()*jokes.length)];
+    if(msg.includes('predict')) return predictions[Math.floor(Math.random()*predictions.length)];
+
+    for (let key in gk) if (msg.includes(key)) return gk[key];
+    for (let key in dictionary) if (msg.includes(key)) return dictionary[key];
+    for (let key in medical) if (msg.includes(key)) return medical[key];
+    for (let key in edu) if (msg.includes(key)) return edu[key];
+
+    return "Hmm 🤔 I don't have that info yet, but I’m learning every day with you!";
+  }
+
+  async function sendToBot(message) {
+    appendMessage({who:'bot', typing:true});
+    await new Promise(r => setTimeout(r, 800));
+    const last = [...chatArea.querySelectorAll('.msg-row')].pop();
+    if (last) chatArea.removeChild(last);
+    appendMessage({who:'bot', text: botResponse(message), time: nowTime()});
+  }
+
+  function sendMessage(){
+    const v = userInput.value.trim();
+    if (!v) return;
+    appendMessage({who:'user', text:v, time: nowTime()});
+    userInput.value = '';
+    sendToBot(v);
+  }
+
+  sendBtn.addEventListener('click', sendMessage);
+  userInput.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); sendMessage(); }});
+  clearBtn.addEventListener('click', ()=> chatArea.innerHTML='');
+</script>
+</body>
+</html>
